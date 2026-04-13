@@ -7,6 +7,17 @@ type Props = {
   hasMatches: boolean;
 };
 
+function seededShuffle(indices: Uint32Array, seed: number) {
+  let s = seed | 0;
+  for (let i = indices.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) | 0;
+    const j = ((s >>> 0) % (i + 1)) | 0;
+    const tmp = indices[i];
+    indices[i] = indices[j];
+    indices[j] = tmp;
+  }
+}
+
 function draw(
   canvas: HTMLCanvasElement,
   probability: number,
@@ -22,22 +33,46 @@ function draw(
   ctx.fillStyle = "#f3f3f0";
   ctx.fillRect(0, 0, width, height);
 
-  const cols = width > height ? 100 : 60;
+  const baseCols = width > height ? 200 : 120;
+  const cols = Math.max(baseCols, Math.floor(width / (3.5 * dpr)));
   const rows = Math.max(1, Math.floor(cols * (height / width)));
   const total = cols * rows;
   const survivors = hasMatches
     ? Math.max(1, Math.round(total * probability))
     : 0;
+
+  const indices = new Uint32Array(total);
+  for (let i = 0; i < total; i++) indices[i] = i;
+  seededShuffle(indices, 314159);
+
+  const survivorSet = new Set<number>();
+  for (let i = 0; i < survivors; i++) survivorSet.add(indices[i]);
+
   const gapX = width / cols;
   const gapY = height / rows;
-  const radius = Math.max(1.2 * dpr, Math.min(gapX, gapY) * 0.22);
+  const radius = Math.max(0.6 * dpr, Math.min(gapX, gapY) * 0.18);
 
+  ctx.fillStyle = "#dcdcd8";
+  ctx.beginPath();
   for (let i = 0; i < total; i++) {
+    if (survivorSet.has(i)) continue;
     const x = (i % cols) * gapX + gapX / 2;
     const y = Math.floor(i / cols) * gapY + gapY / 2;
-    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
     ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fillStyle = i < survivors ? "#111" : "#d8d8d4";
+  }
+  ctx.fill();
+
+  if (survivors > 0) {
+    ctx.fillStyle = "#111";
+    ctx.beginPath();
+    for (let i = 0; i < total; i++) {
+      if (!survivorSet.has(i)) continue;
+      const x = (i % cols) * gapX + gapX / 2;
+      const y = Math.floor(i / cols) * gapY + gapY / 2;
+      ctx.moveTo(x + radius, y);
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+    }
     ctx.fill();
   }
 }
@@ -67,7 +102,7 @@ export function PopulationCanvas({ probability, hasMatches }: Props) {
   return (
     <canvas
       ref={ref}
-      className="block h-32 w-full rounded-lg sm:h-40"
+      className="block h-44 w-full rounded-lg sm:h-56"
       aria-label="Each dot is a person. Highlighted dots are matches."
     />
   );

@@ -50,7 +50,11 @@ input[type="range"]::-webkit-slider-thumb {
   height: 20px;
   border-radius: 50%;
   background: var(--text);
-  cursor: pointer;
+  cursor: grab;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  cursor: grabbing;
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -58,6 +62,10 @@ input[type="range"]::-moz-range-thumb {
   height: 20px;
   border-radius: 50%;
   background: var(--text);
-  cursor: pointer;
+  cursor: grab;
   border: none;
+}
+
+input[type="range"]::-moz-range-thumb:active {
+  cursor: grabbing;
 }
