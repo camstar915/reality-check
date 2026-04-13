@@ -878,7 +878,7 @@ export function computeFunnel(state: SearchState): ComputedFunnel {
 }
 
 export function formatCount(value: number) {
-  if (value < 1) return "fewer than 1";
+  if (value < 1) return "< 1";
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(Math.round(value));
 }
 
