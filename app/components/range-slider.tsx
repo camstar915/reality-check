@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 
 type RangeSliderProps = {
   min: number;
@@ -28,7 +28,6 @@ export function RangeSlider({
 }: RangeSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const activeThumb = useRef<"low" | "high" | null>(null);
-  const [dragging, setDragging] = useState(false);
 
   const pct = (v: number) => ((v - min) / (max - min)) * 100;
   const lowPct = pct(valueLow);
@@ -48,7 +47,6 @@ export function RangeSlider({
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       e.preventDefault();
-      setDragging(true);
       const v = valueFromPointer(e.clientX);
       const distLow = Math.abs(v - valueLow);
       const distHigh = Math.abs(v - valueHigh);
@@ -91,13 +89,12 @@ export function RangeSlider({
 
   const handlePointerUp = useCallback(() => {
     activeThumb.current = null;
-    setDragging(false);
   }, []);
 
   return (
     <div
       ref={trackRef}
-      className={`relative h-10 w-full select-none touch-none ${dragging ? "cursor-grabbing" : "cursor-pointer"}`}
+      className="relative h-10 w-full select-none touch-none"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -114,13 +111,13 @@ export function RangeSlider({
 
       {/* low thumb */}
       <div
-        className={`absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--text)] shadow-sm ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+        className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--text)] shadow-sm"
         style={{ left: `${lowPct}%` }}
       />
 
       {/* high thumb */}
       <div
-        className={`absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--text)] shadow-sm ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+        className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--text)] shadow-sm"
         style={{ left: `${highPct}%` }}
       />
     </div>

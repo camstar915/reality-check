@@ -29,6 +29,14 @@ import {
   type SexId,
 } from "../lib/reality-check";
 
+/** Chip tooltips only for these compatibility rows (not lifestyle, family, etc.). */
+const FILTER_KEYS_WITH_CHIP_TOOLTIPS: (keyof SearchState)[] = [
+  "worldview",
+  "faith",
+  "humor",
+  "social",
+];
+
 /* ------------------------------------------------------------------ */
 /*  Icons                                                               */
 /* ------------------------------------------------------------------ */
@@ -161,7 +169,7 @@ function FilterRow({
           <Chip
             key={o.id}
             label={o.label}
-            desc={o.desc}
+            desc={FILTER_KEYS_WITH_CHIP_TOOLTIPS.includes(meta.key) ? o.desc : undefined}
             active={value === o.id}
             onClick={() => onChange(value === o.id ? "either" : o.id)}
           />
@@ -464,7 +472,6 @@ export function RealityCheckExperience({
                   <Chip
                     key={o.id}
                     label={o.label}
-                    desc={o.desc}
                     active={state.family === o.id}
                     onClick={() => set("family", (state.family === o.id ? "either" : o.id) as FamilyId)}
                   />
@@ -486,7 +493,6 @@ export function RealityCheckExperience({
                       <Chip
                         key={o.id}
                         label={o.label}
-                        desc={o.desc}
                         active={state.kidCount === o.id}
                         onClick={() => set("kidCount", (state.kidCount === o.id ? "either" : o.id) as KidCountId)}
                       />
@@ -504,7 +510,6 @@ export function RealityCheckExperience({
                       <Chip
                         key={o.id}
                         label={o.label}
-                        desc={o.desc}
                         active={state.kidTimeline === o.id}
                         onClick={() => set("kidTimeline", (state.kidTimeline === o.id ? "either" : o.id) as KidTimelineId)}
                       />
@@ -527,7 +532,6 @@ export function RealityCheckExperience({
                   <Chip
                     key={o.id}
                     label={o.label}
-                    desc={o.desc}
                     active={state.hasKids === o.id}
                     onClick={() => set("hasKids", (state.hasKids === o.id ? "either" : o.id) as HasKidsId)}
                   />
