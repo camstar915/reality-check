@@ -66,6 +66,7 @@ type BaseOption<T extends string> = {
   probability: number;
   source: string;
   description: string;
+  sourceUrl?: string;
 };
 
 export type CohortSummary = {
@@ -80,6 +81,7 @@ type LocationOption = {
   label: string;
   shareOfPopulation: number;
   description: string;
+  sourceUrl?: string;
 };
 
 type FactorSummary = {
@@ -88,6 +90,13 @@ type FactorSummary = {
   probability: number;
   source: string;
   description: string;
+  sourceUrl?: string;
+};
+
+export type CitationLink = {
+  label: string;
+  href: string;
+  detail: string;
 };
 
 export type ComputedFunnel = {
@@ -249,6 +258,31 @@ const hasKidsOptions: BaseOption<HasKidsId>[] = [
   },
 ];
 
+const calibratedHasKidsOptions: BaseOption<HasKidsId>[] = [
+  {
+    id: "no-kids",
+    label: "No existing kids",
+    probability: 0.55,
+    source: "Transparent proxy, not directly observed in Census tables",
+    description: "Modeled proxy for not already parenting. This is not a direct Census measure.",
+  },
+  {
+    id: "has-kids-ok",
+    label: "Has kids, that's fine",
+    probability: 0.90,
+    source: "Pew: most singles open to dating a parent",
+    description: "Already has children and you're comfortable with that.",
+  },
+  {
+    id: "either",
+    label: "No filter",
+    probability: 1,
+    source: "No additional filter",
+    description: "Leaves existing-children status out of the funnel.",
+  },
+];
+void hasKidsOptions;
+
 const socialOptions: BaseOption<SocialId>[] = [
   {
     id: "no-social",
@@ -394,16 +428,20 @@ const educationOptions: BaseOption<EducationId>[] = [
   {
     id: "bachelors-plus",
     label: "Bachelor's degree+",
-    probability: 0.33,
-    source: "Census 2023: 33.7% of adults 25+ have a bachelor's or higher",
+    probability: 0.368,
+    source: "Census ACS 2024: 36.8% of adults 25+ have a bachelor's or higher",
     description: "Has completed at least a four-year college degree.",
+    sourceUrl:
+      "https://api.census.gov/data/2024/acs/acs1/subject?get=NAME,S1501_C02_010E,S1501_C02_011E,S1501_C02_015E&for=us:1",
   },
   {
     id: "any-degree",
     label: "Some college+",
-    probability: 0.61,
-    source: "Census 2023: 61% of adults have some college or more",
+    probability: 0.641,
+    source: "Census ACS 2024: 64.1% of adults 25+ have some college or more",
     description: "At least some post-secondary education.",
+    sourceUrl:
+      "https://api.census.gov/data/2024/acs/acs1/subject?get=NAME,S1501_C02_010E,S1501_C02_011E,S1501_C02_015E&for=us:1",
   },
   {
     id: "either",
@@ -461,6 +499,109 @@ const locationOptions: LocationOption[] = [
   { id: "illinois", label: "Illinois", shareOfPopulation: 0.038, description: "State-level estimate" },
 ];
 
+const calibratedLocationOptions: LocationOption[] = [
+  {
+    id: "united-states",
+    label: "United States",
+    shareOfPopulation: 1,
+    description: "National estimate",
+    sourceUrl: "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=us:1",
+  },
+  {
+    id: "new-york-metro",
+    label: "New York metro",
+    shareOfPopulation: 0.0582,
+    description: "NYC tri-state metro area",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:35620",
+  },
+  {
+    id: "los-angeles-metro",
+    label: "Los Angeles metro",
+    shareOfPopulation: 0.0382,
+    description: "Greater LA area",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:31080",
+  },
+  {
+    id: "chicago",
+    label: "Chicago metro",
+    shareOfPopulation: 0.0277,
+    description: "Chicagoland area",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:16980",
+  },
+  {
+    id: "dallas-fw",
+    label: "Dallas-Fort Worth",
+    shareOfPopulation: 0.0242,
+    description: "DFW metro",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:19100",
+  },
+  {
+    id: "houston",
+    label: "Houston metro",
+    shareOfPopulation: 0.0224,
+    description: "Greater Houston",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:26420",
+  },
+  {
+    id: "miami",
+    label: "Miami metro",
+    shareOfPopulation: 0.0185,
+    description: "South Florida metro",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:33100",
+  },
+  {
+    id: "atlanta",
+    label: "Atlanta metro",
+    shareOfPopulation: 0.0188,
+    description: "Metro Atlanta",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:12060",
+  },
+  {
+    id: "denver",
+    label: "Denver metro",
+    shareOfPopulation: 0.009,
+    description: "Front Range metro",
+    sourceUrl:
+      "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:19740",
+  },
+  {
+    id: "california",
+    label: "California",
+    shareOfPopulation: 0.1163,
+    description: "State-level estimate",
+    sourceUrl: "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=state:06",
+  },
+  {
+    id: "texas",
+    label: "Texas",
+    shareOfPopulation: 0.0911,
+    description: "State-level estimate",
+    sourceUrl: "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=state:48",
+  },
+  {
+    id: "florida",
+    label: "Florida",
+    shareOfPopulation: 0.0675,
+    description: "State-level estimate",
+    sourceUrl: "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=state:12",
+  },
+  {
+    id: "illinois",
+    label: "Illinois",
+    shareOfPopulation: 0.0375,
+    description: "State-level estimate",
+    sourceUrl: "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=state:17",
+  },
+];
+void locationOptions;
+
 export const defaultState: SearchState = {
   sex: "women",
   ageMin: 25,
@@ -485,6 +626,31 @@ export const defaultState: SearchState = {
 
 const AGE_MIN = 18;
 const AGE_MAX = 55;
+const CENSUS_AGE_SOURCE_URL =
+  "https://api.census.gov/data/2024/acs/acs1?get=NAME,B01001_011E,B01001_012E,B01001_013E,B01001_014E,B01001_015E,B01001_016E,B01001_017E,B01001_035E,B01001_036E,B01001_037E,B01001_038E,B01001_039E,B01001_040E,B01001_041E&for=us:1";
+
+const annualAgeCounts = {
+  women: [
+    [21, 15_265_517 / 7],
+    [27, 11_013_730 / 5],
+    [32, 11_824_494 / 5],
+    [37, 11_519_511 / 5],
+    [42, 11_273_920 / 5],
+    [47, 10_205_992 / 5],
+    [52, 10_288_546 / 5],
+    [57, 10_131_847 / 5],
+  ] as const,
+  men: [
+    [21, 16_005_442 / 7],
+    [27, 11_310_221 / 5],
+    [32, 12_049_960 / 5],
+    [37, 11_736_345 / 5],
+    [42, 11_427_109 / 5],
+    [47, 10_142_209 / 5],
+    [52, 10_186_138 / 5],
+    [57, 9_826_949 / 5],
+  ] as const,
+};
 
 type SearchParamSource =
   | URLSearchParams
@@ -524,7 +690,7 @@ function linearInterp(x: number, x0: number, y0: number, x1: number, y1: number)
   return y0 + t * (y1 - y0);
 }
 
-function interpSeries(x: number, points: readonly [number, number][]) {
+function interpSeries(x: number, points: readonly (readonly [number, number])[]) {
   if (x <= points[0][0]) return points[0][1];
   for (let i = 0; i < points.length - 1; i += 1) {
     if (x <= points[i + 1][0]) {
@@ -550,18 +716,7 @@ export function conversionProbability(ability: number): number {
 
 export function baseCountForSexAndAge(sex: SexId, age: number): number {
   const a = clamp(age, AGE_MIN, AGE_MAX);
-  if (sex === "women") {
-    const pts: [number, number][] = [
-      [18, 9_500_000], [22, 11_200_000], [27.5, 27_080_000],
-      [32.5, 28_900_000], [37, 27_000_000], [45, 22_000_000], [55, 16_000_000],
-    ];
-    return Math.round(interpSeries(a, pts));
-  }
-  const pts: [number, number][] = [
-    [18, 9_800_000], [22, 11_500_000], [27.5, 27_600_000],
-    [32.5, 29_500_000], [37, 28_000_000], [45, 24_000_000], [55, 17_000_000],
-  ];
-  return Math.round(interpSeries(a, pts));
+  return Math.round(interpSeries(a, annualAgeCounts[sex]));
 }
 
 export function formatAgeLabel(age: number) {
@@ -576,14 +731,19 @@ export function normalizeAgeRange(ageMin: number, ageMax: number) {
   return { ageMin: lo, ageMax: hi };
 }
 
-const REF_COHORT_SPAN_YEARS = 5;
-
 export function baseCountForSexAndAgeRange(sex: SexId, ageMin: number, ageMax: number): number {
   const { ageMin: lo, ageMax: hi } = normalizeAgeRange(ageMin, ageMax);
-  const span = hi - lo;
-  if (span < 0.25) return baseCountForSexAndAge(sex, (lo + hi) / 2);
-  const mid = (lo + hi) / 2;
-  return Math.round(baseCountForSexAndAge(sex, mid) * (span / REF_COHORT_SPAN_YEARS));
+  const spanYears = Math.max(1, hi - lo + 1);
+  const steps = Math.max(1, Math.ceil(spanYears * 4));
+  const stepSize = spanYears / steps;
+
+  let total = 0;
+  for (let i = 0; i < steps; i += 1) {
+    const sampleAge = lo + (i + 0.5) * stepSize;
+    total += baseCountForSexAndAge(sex, sampleAge) * stepSize;
+  }
+
+  return Math.round(total);
 }
 
 export function formatAgeRangeLabel(ageMin: number, ageMax: number) {
@@ -602,8 +762,8 @@ function buildCohortSummary(sex: SexId, ageMin: number, ageMax: number): CohortS
   return {
     label: singleAge ? `${sexWord}, age ${range}` : `${sexWord}, ages ${range}`,
     baseCount,
-    description: "Approximate US single-sex population in the selected age band.",
-    source: "Research lane: U.S. Census-style cohort counts",
+    description: "Approximate U.S. single-sex population in the selected age band.",
+    source: "Census ACS 2024 age-by-sex counts (annualized from published age buckets)",
   };
 }
 
@@ -612,7 +772,7 @@ function getOption<T extends string>(options: BaseOption<T>[], id: T) {
 }
 
 function getLocation(id: LocationId) {
-  return locationOptions.find((o) => o.id === id) ?? locationOptions[0];
+  return calibratedLocationOptions.find((o) => o.id === id) ?? calibratedLocationOptions[0];
 }
 
 function cohortLegacyToSexAgeRange(
@@ -683,7 +843,7 @@ export function parseSearchState(source: SearchParamSource): SearchState {
     family: asKey(migrateFamilyId(readValue(source, "family")), familyOptions.map((o) => o.id), defaultState.family),
     kidCount: asKey(readValue(source, "kidCount"), kidCountOptions.map((o) => o.id), defaultState.kidCount),
     kidTimeline: asKey(readValue(source, "kidTimeline"), kidTimelineOptions.map((o) => o.id), defaultState.kidTimeline),
-    hasKids: asKey(readValue(source, "hasKids"), hasKidsOptions.map((o) => o.id), defaultState.hasKids),
+    hasKids: asKey(readValue(source, "hasKids"), calibratedHasKidsOptions.map((o) => o.id), defaultState.hasKids),
     social: asKey(readValue(source, "social"), socialOptions.map((o) => o.id), defaultState.social),
     humor: asKey(readValue(source, "humor"), humorOptions.map((o) => o.id), defaultState.humor),
     smoking: asKey(readValue(source, "smoking"), smokingOptions.map((o) => o.id), defaultState.smoking),
@@ -693,7 +853,7 @@ export function parseSearchState(source: SearchParamSource): SearchState {
     faith: asKey(readValue(source, "faith"), faithOptions.map((o) => o.id), defaultState.faith),
     approachAbility: Number.isFinite(approachRaw) ? Math.round(clamp(approachRaw, 1, 10) * 10) / 10 : defaultState.approachAbility,
     conversionAbility: Number.isFinite(conversionRaw) ? Math.round(clamp(conversionRaw, 1, 10) * 10) / 10 : defaultState.conversionAbility,
-    location: asKey(readValue(source, "location"), locationOptions.map((o) => o.id), defaultState.location),
+    location: asKey(readValue(source, "location"), calibratedLocationOptions.map((o) => o.id), defaultState.location),
     attractiveness: Number.isFinite(attractivenessValue)
       ? Math.round(clamp(attractivenessValue, 0, 10) * 10) / 10
       : defaultState.attractiveness,
@@ -819,7 +979,7 @@ export function computeFunnel(state: SearchState): ComputedFunnel {
   }
 
   optionPairs.push(
-    ["hasKids", getOption(hasKidsOptions, state.hasKids)],
+    ["hasKids", getOption(calibratedHasKidsOptions, state.hasKids)],
     ["faith", getOption(faithOptions, state.faith)],
     ["social", getOption(socialOptions, state.social)],
     ["humor", getOption(humorOptions, state.humor)],
@@ -859,6 +1019,7 @@ export function computeFunnel(state: SearchState): ComputedFunnel {
       probability: opt.probability,
       source: opt.source,
       description: opt.description,
+      sourceUrl: opt.sourceUrl,
     }));
 
   const probability = factors.reduce((acc, f) => acc * f.probability, 1);
@@ -900,10 +1061,10 @@ export function formatPercent(value: number) {
 
 export function getSourceCards() {
   return [
-    { title: "Population baseline", body: "Starts from a real demographic cohort, not a fantasy population.", source: "U.S. Census-style cohort data" },
+    { title: "Population baseline", body: "Starts from ACS age-by-sex counts rather than a hand-waved cohort size.", source: "U.S. Census ACS 2024 age-by-sex tables" },
     { title: "Values and politics", body: "Worldview filters grounded in polling and overlap analysis.", source: "Pew, Gallup, major public polling" },
     { title: "Digital lifestyle", body: "Social-media filter counters distortions from digital performance culture.", source: "Statista, GWI, platform behavior reports" },
-    { title: "Compatibility layer", body: "Humor, family, and chemistry are the hardest variables. The point is to make hidden scarcity visible.", source: "Behavioral proxies and transparent assumptions" },
+    { title: "Compatibility layer", body: "Humor, parent status, and chemistry are still proxy assumptions. They are useful, but they are not Census variables.", source: "Behavioral proxies and transparent assumptions" },
     { title: "Dating reality", body: "Self-assessment sliders model the gap between matching on paper and meeting in practice.", source: "Hinge, Match Group aggregate reports" },
   ];
 }
@@ -916,7 +1077,32 @@ export function getSexOptions(): { id: SexId; label: string }[] {
 }
 
 export function getLocationOptions() {
-  return locationOptions;
+  return calibratedLocationOptions;
+}
+
+export function getCitationLinks(): CitationLink[] {
+  return [
+    {
+      label: "ACS 2024 age-by-sex baseline",
+      href: CENSUS_AGE_SOURCE_URL,
+      detail: "National age buckets used to rebuild the cohort baseline for ages 18-55.",
+    },
+    {
+      label: "ACS 2024 educational attainment",
+      href: "https://api.census.gov/data/2024/acs/acs1/subject?get=NAME,S1501_C02_010E,S1501_C02_011E,S1501_C02_015E&for=us:1",
+      detail: "Used for bachelor's+ and some college+ shares.",
+    },
+    {
+      label: "ACS 2023 metro populations",
+      href: "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=metropolitan%20statistical%20area/micropolitan%20statistical%20area:16980,19100,19740,26420,31080,33100,35620,12060",
+      detail: "Used for New York, Los Angeles, Chicago, Dallas-Fort Worth, Houston, Miami, Atlanta, and Denver shares.",
+    },
+    {
+      label: "ACS 2023 state populations",
+      href: "https://api.census.gov/data/2023/acs/acs1/subject?get=NAME,S0101_C01_001E&for=state:*",
+      detail: "Used for California, Texas, Florida, and Illinois shares.",
+    },
+  ];
 }
 
 export type FilterMeta = {
@@ -960,7 +1146,7 @@ export function getFamilyOptions() {
     family: familyOptions.filter((o) => o.id !== "either").map((o) => ({ id: o.id, label: o.label, desc: o.description })),
     kidCount: kidCountOptions.filter((o) => o.id !== "either").map((o) => ({ id: o.id, label: o.label, desc: o.description })),
     kidTimeline: kidTimelineOptions.filter((o) => o.id !== "either").map((o) => ({ id: o.id, label: o.label, desc: o.description })),
-    hasKids: hasKidsOptions.filter((o) => o.id !== "either").map((o) => ({ id: o.id, label: o.label, desc: o.description })),
+    hasKids: calibratedHasKidsOptions.filter((o) => o.id !== "either").map((o) => ({ id: o.id, label: o.label, desc: o.description })),
   };
 }
 

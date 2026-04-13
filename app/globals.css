@@ -40,6 +40,7 @@ input[type="range"] {
   background: var(--border);
   border-radius: 1px;
   outline: none;
+  cursor: default;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -49,6 +50,7 @@ input[type="range"]::-webkit-slider-thumb {
   height: 20px;
   border-radius: 50%;
   background: var(--text);
+  cursor: default;
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -57,4 +59,5 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   background: var(--text);
   border: none;
+  cursor: default;
 }

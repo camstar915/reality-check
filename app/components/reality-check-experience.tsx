@@ -13,6 +13,7 @@ import {
   formatAgeRangeLabel,
   formatCount,
   formatPercent,
+  getCitationLinks,
   getCoreFilters,
   getFamilyOptions,
   getLifestyleFilters,
@@ -294,6 +295,7 @@ export function RealityCheckExperience({
   const coreFilters = getCoreFilters();
   const familyOpts = getFamilyOptions();
   const lifestyleFilters = getLifestyleFilters();
+  const citationLinks = getCitationLinks();
 
   const countActive = (filters: FilterMeta[]) =>
     filters.filter((f) => (state[f.key] as string) !== "either").length;
@@ -525,7 +527,7 @@ export function RealityCheckExperience({
                 <span className={`text-[0.7rem] font-medium uppercase tracking-wider ${state.hasKids !== "either" ? "text-[var(--text)]" : "text-[var(--text-3)]"}`}>
                   Existing kids
                 </span>
-                <span className="text-[0.65rem] text-[var(--text-4)]">From a prior relationship</span>
+                <span className="text-[0.65rem] text-[var(--text-4)]">Modeled proxy, not a direct Census field</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {familyOpts.hasKids.map((o) => (
@@ -702,8 +704,34 @@ export function RealityCheckExperience({
             {copied ? "Link Copied" : "Share Your Reality Check"}
           </button>
           <p className="mt-3 text-xs text-[var(--text-4)]">
-            Estimates use public demographic data and transparent assumptions.
+            Census-backed where possible, transparent assumptions where not directly observable.
           </p>
+          <div className="mx-auto mt-5 max-w-xl rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-4 text-left">
+            <h2 className="text-[0.7rem] font-semibold uppercase tracking-widest text-[var(--text-3)]">
+              Citations
+            </h2>
+            <p className="mt-2 text-xs leading-relaxed text-[var(--text-3)]">
+              The age baseline, education shares, and location shares below were updated to match current Census tables.
+              Other filters in the app are still modeled assumptions rather than direct Census measures.
+            </p>
+            <div className="mt-3 space-y-3">
+              {citationLinks.map((citation) => (
+                <div key={citation.href}>
+                  <a
+                    href={citation.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-medium text-[var(--text)] underline decoration-[var(--text-4)] underline-offset-3"
+                  >
+                    {citation.label}
+                  </a>
+                  <p className="mt-1 text-xs leading-relaxed text-[var(--text-4)]">
+                    {citation.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </footer>
       </div>
     </main>
