@@ -701,17 +701,11 @@ function interpSeries(x: number, points: readonly (readonly [number, number])[])
 }
 
 export function approachProbability(ability: number): number {
-  if (ability >= 10) return 1;
-  return interpSeries(clamp(ability, 1, 10), [
-    [1, 0.02], [3, 0.05], [5, 0.10], [7, 0.20], [9, 0.45], [10, 1.0],
-  ]);
+  return clamp(ability, 1, 10) / 10;
 }
 
 export function conversionProbability(ability: number): number {
-  if (ability >= 10) return 1;
-  return interpSeries(clamp(ability, 1, 10), [
-    [1, 0.03], [3, 0.07], [5, 0.15], [7, 0.28], [9, 0.50], [10, 1.0],
-  ]);
+  return clamp(ability, 1, 10) / 10;
 }
 
 export function baseCountForSexAndAge(sex: SexId, age: number): number {
